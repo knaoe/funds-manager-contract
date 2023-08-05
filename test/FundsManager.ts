@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 import { expect } from "chai";
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { EventLog } from "ethers";
@@ -8,13 +8,12 @@ describe("FundsManager", function () {
     const [owner, feeRecipient, beneficiary] = await ethers.getSigners();
 
     const FundsManager = await ethers.getContractFactory("FundsManager");
-    const fundsManager = await FundsManager.deploy();
-
-    await fundsManager.initialize(
+    const fundsManager = await upgrades.deployProxy(FundsManager, [
       feeRecipient.address,
       beneficiary.address,
-      10
-    );
+      10,
+    ]);
+
     return { fundsManager, owner, feeRecipient, beneficiary };
   }
 
